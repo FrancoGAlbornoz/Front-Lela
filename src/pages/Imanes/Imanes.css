@@ -1,0 +1,76 @@
+.imanes-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.dropzone {
+  border: 2px dashed var(--primary-dark);
+  border-radius: var(--radius-md);
+  padding: 40px 20px;
+  text-align: center;
+  background: var(--surface);
+  cursor: pointer;
+  transition: var(--transition);
+  margin-bottom: 20px;
+}
+
+.dropzone:hover, .dropzone.dragging {
+  background: var(--primary-light);
+  border-color: var(--primary);
+  transform: scale(1.02);
+}
+
+.dropzone-content p {
+  color: var(--text-light);
+  font-size: 0.9rem;
+  margin-top: 10px;
+}
+
+.images-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.preview-item {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.preview-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.remove-btn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--text-main);
+  border: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  font-size: 16px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.remove-btn:hover {
+  background: #ff4d4f;
+  color: white;
+}
