@@ -57,15 +57,66 @@ export default function Imanes() {
     setCliente(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Aquí iría la lógica de subida a Cloudinary
-    console.log('Enviando pedido de imanes:', {
-      cliente,
-      cantidad: images.length,
-      images
-    });
-    alert(`¡Genial! Se preparará el pedido para ${images.length} imán(es).`);
+    setIsSubmitting(true);
+    
+    try {
+      // 1. Subir las imágenes primero a la API
+      const formData = new FormData();
+      images.forEach(img => {
+        formData.append('imagenes', img.file);
+      });
+
+      const uploadResponse = await fetch('http://localhost:3000/api/imanes/upload', {
+        method: 'POST',
+        body: formData
+      });
+      
+      const uploadResult = await uploadResponse.json();
+      
+      if (!uploadResponse.ok) {
+        throw new Error(uploadResult.error || 'Error al subir las imágenes');
+      }
+
+      // Las urls devueltas por el servidor
+      const urlsImagenes = uploadResult.urls;
+
+      // 2. Crear el pedido con los datos del cliente y las URLs
+      const pedidoPayload = {
+        cliente: {
+          nombre: cliente.nombre,
+          email: cliente.email,
+          telefono: cliente.telefono,
+          observaciones: cliente.observaciones
+        },
+        cantidad: images.length,
+        images: urlsImagenes
+      };
+
+      const pedidoResponse = await fetch('http://localhost:3000/api/imanes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(pedidoPayload)
+      });
+
+      const pedidoResult = await pedidoResponse.json();
+
+      if (pedidoResponse.ok) {
+        alert('¡Genial! Pedido de imanes enviado correctamente.');
+        window.location.href = '/'; // Redirigimos al inicio
+      } else {
+        throw new Error(pedidoResult.error || 'Error al guardar el pedido');
+      }
+
+    } catch (err) {
+      console.error('Error procesando pedido de imanes:', err);
+      alert('Ocurrió un error: ' + err.message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const isFormValid = images.length > 0 && cliente.nombre.trim() !== '' && cliente.email.trim() !== '';
@@ -168,14 +219,14 @@ export default function Imanes() {
               <button 
                 type="submit"
                 className="btn-primary" 
-                disabled={!isFormValid}
+                disabled={!isFormValid || isSubmitting}
                 style={{ 
                   marginTop: '10px',
-                  opacity: isFormValid ? 1 : 0.5,
+                  opacity: (isFormValid && !isSubmitting) ? 1 : 0.5,
                   width: '100%'
                 }}
               >
-                Confirmar Pedido de Imanes
+                {isSubmitting ? 'Procesando pedido...' : 'Confirmar Pedido de Imanes'}
               </button>
             </form>
           </div>

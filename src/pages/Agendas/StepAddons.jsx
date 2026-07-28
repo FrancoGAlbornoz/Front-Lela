@@ -1,18 +1,4 @@
-import { useState, useEffect } from 'react';
-
-const MOCK_ADDONS = [
-  { id: 1, nombre: 'Elástico', tipo: 'ACCESORIO', precio: 2520 },
-  { id: 2, nombre: 'Cinta Marcadora', tipo: 'ACCESORIO', precio: 1500 },
-  { id: 3, nombre: 'Sobre Interno', tipo: 'SECCION', precio: 3000 }
-];
-
-export default function StepAddons({ data, updateData, nextStep, prevStep }) {
-  const [addonsList, setAddonsList] = useState([]);
-
-  useEffect(() => {
-    setAddonsList(MOCK_ADDONS);
-  }, []);
-
+export default function StepAddons({ data, updateData, nextStep, prevStep, adicionales }) {
   const toggleAddon = (addon) => {
     const isSelected = data.adicionales.some(a => a.id === addon.id);
     if (isSelected) {
@@ -30,7 +16,7 @@ export default function StepAddons({ data, updateData, nextStep, prevStep }) {
       </p>
 
       <div className="options-grid" style={{ gridTemplateColumns: '1fr' }}>
-        {addonsList.map(addon => {
+        {adicionales.map(addon => {
           const isSelected = data.adicionales.some(a => a.id === addon.id);
           return (
             <div 
@@ -44,7 +30,7 @@ export default function StepAddons({ data, updateData, nextStep, prevStep }) {
                 <div style={{ fontSize: '0.85rem', color: 'var(--text-light)', textTransform: 'capitalize' }}>{addon.tipo.toLowerCase()}</div>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                <div className="option-price">+ ${addon.precio.toLocaleString('es-AR')}</div>
+                <div className="option-price">+ ${Number(addon.precio).toLocaleString('es-AR')}</div>
                 <div style={{ 
                   width: '24px', height: '24px', borderRadius: '50%', border: '2px solid var(--border-color)', 
                   display: 'flex', alignItems: 'center', justifyContent: 'center',

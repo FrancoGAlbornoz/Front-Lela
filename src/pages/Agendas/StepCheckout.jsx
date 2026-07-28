@@ -1,9 +1,13 @@
+import { useState } from 'react';
+
 export default function StepCheckout({ data, updateData, prevStep }) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const calculateTotal = () => {
     let total = 0;
-    if (data.tamano) total += data.tamano.precio_base;
-    if (data.interior) total += data.interior.precio_adicional;
-    data.adicionales.forEach(a => total += a.precio);
+    if (data.tamano) total += Number(data.tamano.precioBase);
+    if (data.interior) total += Number(data.interior.precioAdicional);
+    data.adicionales.forEach(a => total += Number(a.precio));
     return total;
   };
 
@@ -16,10 +20,48 @@ export default function StepCheckout({ data, updateData, prevStep }) {
 
   const isFormValid = data.cliente.nombre.trim() !== '' && data.cliente.email.trim() !== '';
 
-  const handleCheckout = () => {
-    // Aquí iría la integración con la API para guardar el pedido
-    // Y luego redireccionar a PayWay
-    alert('¡Pedido guardado! Redirigiendo a PayWay...');
+  const handleCheckout = async () => {
+    setIsSubmitting(true);
+    
+    // Armamos el payload según espera MySQLPedidoRepository
+    const payload = {
+      nombreCliente: data.cliente.nombre,
+      emailCliente: data.cliente.email,
+      telefonoCliente: data.cliente.telefono,
+      tamano: data.tamano,
+      interior: data.interior,
+      tipografia: data.tipografia,
+      fondoTapa: data.fondoTapa,
+      textoTapa: data.textoTapa,
+      orientacion: data.orientacion,
+      observaciones: data.observaciones,
+      cantidad: data.cantidad,
+      total: total,
+      estado: 'PENDIENTE_PAGO',
+      adicionales: data.adicionales
+    };
+
+    try {
+      const response = await fetch('http://localhost:3000/api/pedidos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      
+      const result = await response.json();
+      
+      if (response.ok) {
+        alert('¡Pedido de Agenda guardado con éxito! Redirigiendo a PayWay (Próximamente)...');
+        window.location.href = '/'; // Redirigimos al inicio por ahora
+      } else {
+        alert('Error al guardar el pedido: ' + result.error);
+      }
+    } catch (err) {
+      console.error('Error al enviar pedido:', err);
+      alert('Error de conexión al enviar el pedido.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (

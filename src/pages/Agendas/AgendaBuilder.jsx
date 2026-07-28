@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import StepSize from './StepSize';
 import StepCover from './StepCover';
 import StepAddons from './StepAddons';
@@ -14,6 +14,9 @@ const STEPS = [
 
 export default function AgendaBuilder() {
   const [currentStep, setCurrentStep] = useState(1);
+  const [catalogo, setCatalogo] = useState(null);
+  const [loading, setLoading] = useState(true);
+  
   const [agendaData, setAgendaData] = useState({
     tamano: null,
     interior: null,
@@ -28,8 +31,22 @@ export default function AgendaBuilder() {
       nombre: '',
       email: '',
       telefono: ''
-    }
+    },
+    cantidad: 1
   });
+
+  useEffect(() => {
+    fetch('http://localhost:3000/api/catalogo')
+      .then(res => res.json())
+      .then(data => {
+        setCatalogo(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error("Error cargando catálogo:", err);
+        setLoading(false);
+      });
+  }, []);
 
   const nextStep = () => setCurrentStep(prev => Math.min(prev + 1, STEPS.length));
   const prevStep = () => setCurrentStep(prev => Math.max(prev - 1, 1));
@@ -37,6 +54,14 @@ export default function AgendaBuilder() {
   const updateData = (newData) => {
     setAgendaData(prev => ({ ...prev, ...newData }));
   };
+
+  if (loading) {
+    return <div className="text-center" style={{ padding: '50px' }}>Cargando opciones...</div>;
+  }
+
+  if (!catalogo) {
+    return <div className="text-center" style={{ padding: '50px', color: 'red' }}>Error al conectar con el servidor.</div>;
+  }
 
   return (
     <div className="agenda-builder">
@@ -53,9 +78,9 @@ export default function AgendaBuilder() {
       </div>
 
       <div className="step-content card">
-        {currentStep === 1 && <StepSize data={agendaData} updateData={updateData} nextStep={nextStep} />}
-        {currentStep === 2 && <StepCover data={agendaData} updateData={updateData} nextStep={nextStep} prevStep={prevStep} />}
-        {currentStep === 3 && <StepAddons data={agendaData} updateData={updateData} nextStep={nextStep} prevStep={prevStep} />}
+        {currentStep === 1 && <StepSize data={agendaData} updateData={updateData} nextStep={nextStep} tamanos={catalogo.tamanos} interiores={catalogo.interiores} />}
+        {currentStep === 2 && <StepCover data={agendaData} updateData={updateData} nextStep={nextStep} prevStep={prevStep} fondos={catalogo.fondos} tipografias={catalogo.tipografias} />}
+        {currentStep === 3 && <StepAddons data={agendaData} updateData={updateData} nextStep={nextStep} prevStep={prevStep} adicionales={catalogo.adicionales} />}
         {currentStep === 4 && <StepCheckout data={agendaData} updateData={updateData} prevStep={prevStep} />}
       </div>
     </div>

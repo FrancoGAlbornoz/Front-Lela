@@ -1,42 +1,51 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
-const MOCK_COVERS = [
-  { id: 1, nombre: 'Flores Primaverales', categoria: 'Floral', url_imagen: 'https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=300&q=80' },
-  { id: 2, nombre: 'Mármol Negro', categoria: 'Abstracto', url_imagen: 'https://images.unsplash.com/photo-1543883072-3c220bf9f430?auto=format&fit=crop&w=300&q=80' },
-  { id: 3, nombre: 'Liso Pastel', categoria: 'Colores', url_imagen: 'https://images.unsplash.com/photo-1557683311-eac922347aa1?auto=format&fit=crop&w=300&q=80' }
-];
-
-const MOCK_FONTS = [
-  { id: 1, nombre: 'Montserrat Bold' },
-  { id: 2, nombre: 'Roboto Regular' },
-  { id: 3, nombre: 'Playfair Display' }
-];
-
-export default function StepCover({ data, updateData, nextStep, prevStep }) {
-  const [covers, setCovers] = useState([]);
-  const [fonts, setFonts] = useState([]);
+export default function StepCover({ data, updateData, nextStep, prevStep, fondos, tipografias }) {
   const [uploadMode, setUploadMode] = useState(false);
-
-  useEffect(() => {
-    setCovers(MOCK_COVERS);
-    setFonts(MOCK_FONTS);
-  }, []);
+  const [isUploading, setIsUploading] = useState(false);
 
   const handleCoverSelect = (cover) => {
     updateData({ fondoTapa: cover, imagenPersonalizada: null });
     setUploadMode(false);
   };
 
-  const handleCustomUpload = (e) => {
+  const handleCustomUpload = async (e) => {
     const file = e.target.files[0];
     if (file) {
-      const imageUrl = URL.createObjectURL(file); // Preview temporal
+      // Mostrar preview temporal y estado de carga
+      const imageUrl = URL.createObjectURL(file); 
       updateData({ fondoTapa: null, imagenPersonalizada: imageUrl });
       setUploadMode(true);
+      setIsUploading(true);
+
+      const formData = new FormData();
+      formData.append('imagen', file);
+
+      try {
+        const response = await fetch('http://localhost:3000/api/pedidos/upload-tapa', {
+          method: 'POST',
+          body: formData,
+        });
+        const result = await response.json();
+        
+        if (response.ok) {
+          // Reemplazamos la preview por la URL real del servidor/cloudinary
+          updateData({ imagenPersonalizada: result.url });
+        } else {
+          alert('Error al subir la imagen: ' + result.error);
+          updateData({ imagenPersonalizada: null });
+        }
+      } catch (err) {
+        console.error('Error de red al subir:', err);
+        alert('Error de conexión al subir la imagen.');
+        updateData({ imagenPersonalizada: null });
+      } finally {
+        setIsUploading(false);
+      }
     }
   };
 
-  const isComplete = (data.fondoTapa !== null || data.imagenPersonalizada !== null) && 
+  const isComplete = (data.fondoTapa !== null || (data.imagenPersonalizada !== null && !isUploading)) && 
                      data.tipografia !== null && 
                      data.textoTapa.trim() !== '';
 
@@ -66,14 +75,14 @@ export default function StepCover({ data, updateData, nextStep, prevStep }) {
 
       {!uploadMode ? (
         <div className="options-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))' }}>
-          {covers.map(cover => (
+          {fondos.map(cover => (
             <div 
               key={cover.id} 
               className={`option-card ${data.fondoTapa?.id === cover.id ? 'selected' : ''}`}
               style={{ padding: '10px' }}
               onClick={() => handleCoverSelect(cover)}
             >
-              <img src={cover.url_imagen} alt={cover.nombre} style={{ width: '100%', height: '150px', objectFit: 'cover', borderRadius: '8px' }} />
+              <img src={cover.urlImagen} alt={cover.nombre} style={{ width: '100%', height: '150px', objectFit: 'cover', borderRadius: '8px' }} />
               <div style={{ marginTop: '10px', fontSize: '0.9rem', fontWeight: '500' }}>{cover.nombre}</div>
             </div>
           ))}
@@ -82,10 +91,10 @@ export default function StepCover({ data, updateData, nextStep, prevStep }) {
         <div className="upload-area" style={{ border: '2px dashed var(--border-color)', padding: '40px', textAlign: 'center', borderRadius: 'var(--radius-md)' }}>
           {data.imagenPersonalizada ? (
             <div>
-              <img src={data.imagenPersonalizada} alt="Preview" style={{ maxHeight: '200px', borderRadius: '8px', marginBottom: '15px' }} />
-              <p>¡Imagen lista!</p>
-              <input type="file" id="customUpload" hidden onChange={handleCustomUpload} accept="image/*" />
-              <label htmlFor="customUpload" className="btn-secondary" style={{ display: 'inline-block', marginTop: '10px' }}>Cambiar Imagen</label>
+              <img src={data.imagenPersonalizada} alt="Preview" style={{ maxHeight: '200px', borderRadius: '8px', marginBottom: '15px', opacity: isUploading ? 0.5 : 1 }} />
+              {isUploading ? <p>Subiendo imagen...</p> : <p>¡Imagen lista!</p>}
+              <input type="file" id="customUpload" hidden onChange={handleCustomUpload} accept="image/*" disabled={isUploading} />
+              <label htmlFor="customUpload" className="btn-secondary" style={{ display: 'inline-block', marginTop: '10px', opacity: isUploading ? 0.5 : 1 }}>Cambiar Imagen</label>
             </div>
           ) : (
             <div>
@@ -115,7 +124,7 @@ export default function StepCover({ data, updateData, nextStep, prevStep }) {
           <div>
             <label style={{ display: 'block', marginBottom: '5px', fontSize: '0.9rem' }}>Tipografía</label>
             <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-              {fonts.map(font => (
+              {tipografias.map(font => (
                 <button
                   key={font.id}
                   className={`btn-secondary ${data.tipografia?.id === font.id ? 'active' : ''}`}
