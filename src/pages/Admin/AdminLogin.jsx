@@ -17,8 +17,8 @@ export default function AdminLogin() {
     setError('');
 
     try {
-      // Endpoint de login que ya existe en tu API
-      const response = await fetch('http://localhost:3000/api/pedidos/login', {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+      const response = await fetch(`${API_URL}/api/pedidos/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(credentials)

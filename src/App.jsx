@@ -9,8 +9,8 @@ function App() {
   return (
     <div className="app-container">
       <header style={{ padding: '20px', borderBottom: '1px solid var(--border-color)', textAlign: 'center' }}>
-        <h1 style={{ color: 'var(--primary-dark)' }}>Librería Lela</h1>
-        <nav style={{ display: 'flex', gap: '20px', justifyContent: 'center' }}>
+        <h1 style={{ color: 'var(--primary-dark)', fontFamily: "'Dancing Script', cursive", fontSize: '3.5rem', margin: '0' }}>Librería Lela</h1>
+        <nav style={{ display: 'flex', gap: '20px', justifyContent: 'center', marginTop: '10px' }}>
           <Link to="/">Inicio</Link>
           <Link to="/agendas">Agendas</Link>
           <Link to="/imanes">Imanes</Link>

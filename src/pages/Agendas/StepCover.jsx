@@ -22,7 +22,8 @@ export default function StepCover({ data, updateData, nextStep, prevStep, fondos
       formData.append('imagen', file);
 
       try {
-        const response = await fetch('http://localhost:3000/api/pedidos/upload-tapa', {
+        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+        const response = await fetch(`${API_URL}/api/pedidos/upload-tapa`, {
           method: 'POST',
           body: formData,
         });

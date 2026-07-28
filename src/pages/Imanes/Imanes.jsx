@@ -70,7 +70,8 @@ export default function Imanes() {
         formData.append('imagenes', img.file);
       });
 
-      const uploadResponse = await fetch('http://localhost:3000/api/imanes/upload', {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+      const uploadResponse = await fetch(`${API_URL}/api/imanes/upload`, {
         method: 'POST',
         body: formData
       });
@@ -96,7 +97,7 @@ export default function Imanes() {
         images: urlsImagenes
       };
 
-      const pedidoResponse = await fetch('http://localhost:3000/api/imanes', {
+      const pedidoResponse = await fetch(`${API_URL}/api/imanes`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(pedidoPayload)

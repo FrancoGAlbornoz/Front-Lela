@@ -19,9 +19,10 @@ export default function AdminDashboard() {
     const fetchDatos = async () => {
       try {
         const headers = { 'Authorization': `Bearer ${token}` };
+        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
         
         // Fetch agendas
-        const resAgendas = await fetch('http://localhost:3000/api/pedidos', { headers });
+        const resAgendas = await fetch(`${API_URL}/api/pedidos`, { headers });
         if (resAgendas.ok) {
           setPedidosAgendas(await resAgendas.json());
         } else if (resAgendas.status === 401 || resAgendas.status === 403) {
@@ -32,7 +33,7 @@ export default function AdminDashboard() {
         }
 
         // Fetch imanes
-        const resImanes = await fetch('http://localhost:3000/api/imanes', { headers });
+        const resImanes = await fetch(`${API_URL}/api/imanes`, { headers });
         if (resImanes.ok) {
           setPedidosImanes(await resImanes.json());
         }
