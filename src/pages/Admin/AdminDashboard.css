@@ -1,0 +1,104 @@
+.admin-dashboard {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.admin-header h2 {
+  margin: 0;
+  color: var(--primary-dark);
+}
+
+.admin-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.tab-btn {
+  padding: 10px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+  color: var(--text-main);
+  transition: var(--transition);
+}
+
+.tab-btn:hover {
+  background: var(--bg-color);
+}
+
+.tab-btn.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.admin-table th {
+  background: var(--bg-color);
+  padding: 15px;
+  font-weight: 600;
+  color: var(--text-heading);
+  border-bottom: 2px solid var(--border-color);
+}
+
+.admin-table td {
+  padding: 15px;
+  border-bottom: 1px solid var(--border-color);
+  vertical-align: middle;
+}
+
+.admin-table tr:last-child td {
+  border-bottom: none;
+}
+
+.admin-table tr:hover td {
+  background: rgba(0,0,0,0.01);
+}
+
+.badge {
+  padding: 5px 10px;
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.badge-pendiente_pago, .badge-pendiente {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.badge-en_produccion {
+  background: #cce5ff;
+  color: #004085;
+}
+
+.badge-entregado {
+  background: #d4edda;
+  color: #155724;
+}
+
+.btn-link {
+  color: var(--primary-dark);
+  text-decoration: underline;
+  font-size: 0.9rem;
+  padding: 0;
+}

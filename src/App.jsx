@@ -1,7 +1,9 @@
-import { Routes, Route, Link } from 'react-router-dom'
-import AgendaBuilder from './pages/Agendas/AgendaBuilder'
-import Imanes from './pages/Imanes/Imanes'
-import './App.css'
+import { Routes, Route, Link } from 'react-router-dom';
+import AgendaBuilder from './pages/Agendas/AgendaBuilder';
+import Imanes from './pages/Imanes/Imanes';
+import AdminLogin from './pages/Admin/AdminLogin';
+import AdminDashboard from './pages/Admin/AdminDashboard';
+import './App.css';
 
 function App() {
   return (
@@ -20,10 +22,12 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/agendas" element={<AgendaBuilder />} />
           <Route path="/imanes" element={<Imanes />} />
+          <Route path="/admin" element={<AdminLogin />} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
         </Routes>
       </main>
     </div>
-  )
+  );
 }
 
 function Home() {
@@ -42,7 +46,7 @@ function Home() {
         </Link>
       </div>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
