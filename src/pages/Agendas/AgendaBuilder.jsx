@@ -38,13 +38,17 @@ export default function AgendaBuilder() {
   useEffect(() => {
     const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
     fetch(`${API_URL}/api/catalogo`)
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error('Error en la API');
+        return res.json();
+      })
       .then(data => {
         setCatalogo(data);
         setLoading(false);
       })
       .catch(err => {
         console.error("Error cargando catálogo:", err);
+        setCatalogo(null);
         setLoading(false);
       });
   }, []);
