@@ -13,7 +13,7 @@ export default function StepCover({ data, updateData, nextStep, prevStep, fondos
     const file = e.target.files[0];
     if (file) {
       // Mostrar preview temporal y estado de carga
-      const imageUrl = URL.createObjectURL(file); 
+      const imageUrl = URL.createObjectURL(file);
       updateData({ fondoTapa: null, imagenPersonalizada: imageUrl });
       setUploadMode(true);
       setIsUploading(true);
@@ -28,7 +28,7 @@ export default function StepCover({ data, updateData, nextStep, prevStep, fondos
           body: formData,
         });
         const result = await response.json();
-        
+
         if (response.ok) {
           // Reemplazamos la preview por la URL real del servidor/cloudinary
           updateData({ imagenPersonalizada: result.url });
@@ -46,39 +46,47 @@ export default function StepCover({ data, updateData, nextStep, prevStep, fondos
     }
   };
 
-  const isComplete = (data.fondoTapa !== null || (data.imagenPersonalizada !== null && !isUploading)) && 
-                     data.tipografia !== null && 
-                     data.textoTapa.trim() !== '';
+  const isComplete = (data.fondoTapa !== null || (data.imagenPersonalizada !== null && !isUploading)) &&
+    data.tipografia !== null &&
+    data.textoTapa.trim() !== '';
+
+  const getFontFamily = (fontName) => {
+    if (fontName.toLowerCase().includes('montserrat')) return "'Montserrat', sans-serif";
+    if (fontName.toLowerCase().includes('roboto')) return "'Roboto', sans-serif";
+    if (fontName.toLowerCase().includes('playfair')) return "'Playfair Display', serif";
+    return 'inherit';
+  };
 
   return (
     <div className="step-cover">
-      <h2>2. Diseño de Tapa</h2>
-      <p style={{ color: 'var(--text-light)', marginBottom: '20px' }}>
-        Elige un fondo de nuestro catálogo o sube tu propia imagen. Luego, personaliza el texto de la tapa.
+      <h3 style={{ marginBottom: '20px', color: 'var(--primary-dark)' }}>2. Diseño de la Tapa</h3>
+      <p style={{ marginBottom: '20px', fontSize: '0.95rem' }}>
+        Elige un diseño de nuestro catálogo exclusivo o sube tu propia imagen para que sea 100% único.
       </p>
 
       <div style={{ display: 'flex', gap: '20px', marginBottom: '20px' }}>
-        <button 
+        <button
           className={`btn-secondary ${!uploadMode ? 'active' : ''}`}
           style={{ borderColor: !uploadMode ? 'var(--primary-dark)' : '', background: !uploadMode ? 'var(--primary-light)' : '' }}
           onClick={() => setUploadMode(false)}
         >
           Catálogo Lela
         </button>
-        <button 
+        <button
           className={`btn-secondary ${uploadMode ? 'active' : ''}`}
           style={{ borderColor: uploadMode ? 'var(--primary-dark)' : '', background: uploadMode ? 'var(--primary-light)' : '' }}
           onClick={() => setUploadMode(true)}
         >
-          Subir mi Imagen
+          Diseño Propio
         </button>
       </div>
 
+      {/* Selector Visual (Catálogo o Upload) */}
       {!uploadMode ? (
         <div className="options-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))' }}>
           {fondos.map(cover => (
-            <div 
-              key={cover.id} 
+            <div
+              key={cover.id}
               className={`option-card ${data.fondoTapa?.id === cover.id ? 'selected' : ''}`}
               style={{ padding: '10px' }}
               onClick={() => handleCoverSelect(cover)}
@@ -103,35 +111,41 @@ export default function StepCover({ data, updateData, nextStep, prevStep, fondos
               <label htmlFor="customUpload" className="btn-primary" style={{ display: 'inline-block', cursor: 'pointer' }}>
                 Seleccionar Archivo
               </label>
-              <p style={{ marginTop: '10px', fontSize: '0.9rem', color: 'var(--text-light)' }}>Soporta JPG y PNG</p>
+              <p style={{ marginTop: '10px', fontSize: '0.9rem', color: 'var(--text-light)' }}>Formatos soportados: JPG, PNG, PDF</p>
+              <p style={{ marginTop: '10px', fontSize: '0.9rem', color: 'var(--text-light)' }}>Tamaño máximo: 5 MB</p>
             </div>
           )}
         </div>
       )}
 
       <div style={{ marginTop: '40px', background: 'var(--surface)', padding: '20px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)' }}>
-        <h3>Personalizar Texto</h3>
+        <h4 style={{ marginBottom: '15px', color: 'var(--primary-dark)' }}>Personalización de Texto</h4>
+        
         <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginTop: '15px' }}>
           <div>
             <label style={{ display: 'block', marginBottom: '5px', fontSize: '0.9rem' }}>Texto en la Tapa</label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               value={data.textoTapa}
               onChange={(e) => updateData({ textoTapa: e.target.value })}
               placeholder="Ej. Agenda 2026 de Laura"
-              style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border-color)' }}
+              className="form-control"
+              style={{ width: '100%' }}
             />
           </div>
+
           <div>
-            <label style={{ display: 'block', marginBottom: '5px', fontSize: '0.9rem' }}>Tipografía</label>
+            <label style={{ display: 'block', marginBottom: '10px', fontSize: '0.9rem' }}>Tipografía</label>
             <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
               {tipografias.map(font => (
                 <button
                   key={font.id}
                   className={`btn-secondary ${data.tipografia?.id === font.id ? 'active' : ''}`}
-                  style={{ 
-                    borderColor: data.tipografia?.id === font.id ? 'var(--primary-dark)' : '', 
-                    background: data.tipografia?.id === font.id ? 'var(--primary-light)' : '' 
+                  style={{
+                    borderColor: data.tipografia?.id === font.id ? 'var(--primary-dark)' : '',
+                    background: data.tipografia?.id === font.id ? 'var(--primary-light)' : '',
+                    fontFamily: getFontFamily(font.nombre),
+                    fontSize: '1.05rem'
                   }}
                   onClick={() => updateData({ tipografia: font })}
                 >
@@ -145,8 +159,8 @@ export default function StepCover({ data, updateData, nextStep, prevStep, fondos
 
       <div className="step-actions">
         <button className="btn-secondary" onClick={prevStep}>Atrás</button>
-        <button 
-          className="btn-primary" 
+        <button
+          className="btn-primary"
           onClick={nextStep}
           disabled={!isComplete}
           style={{ opacity: isComplete ? 1 : 0.5 }}
