@@ -141,22 +141,46 @@ export default function AdminDashboard() {
                 <tr>
                   <th>ID</th>
                   <th>Cliente</th>
-                  <th>Formato</th>
+                  <th>Formato y Detalles</th>
+                  <th>Diseño Tapa</th>
                   <th>Total</th>
                   <th>Estado</th>
                   <th>Fecha</th>
                 </tr>
               </thead>
               <tbody>
-                {pedidosAgendas.length === 0 ? <tr><td colSpan="6" className="text-center">No hay pedidos de agendas</td></tr> : null}
+                {pedidosAgendas.length === 0 ? <tr><td colSpan="7" className="text-center">No hay pedidos de agendas</td></tr> : null}
                 {pedidosAgendas.map(pedido => (
                   <tr key={pedido.id}>
                     <td>#{pedido.id}</td>
-                    <td>{pedido.nombre_cliente} <br/> <small>{pedido.email_cliente}</small></td>
-                    <td>{pedido.tamano_nombre} - {pedido.interior_nombre}</td>
-                    <td>${pedido.total}</td>
-                    <td><span className={`status-badge status-${pedido.estado.toLowerCase()}`}>{pedido.estado}</span></td>
-                    <td>{new Date(pedido.fecha_creacion).toLocaleDateString()}</td>
+                    <td>
+                      <strong>{pedido.nombreCliente}</strong><br/>
+                      <small>{pedido.emailCliente}</small><br/>
+                      <small>{pedido.telefonoCliente}</small>
+                    </td>
+                    <td>
+                      <strong>{pedido.tamano} - {pedido.interior}</strong><br/>
+                      {pedido.extras && <small style={{ color: 'var(--primary-dark)' }}>+ {pedido.extras}</small>}
+                      {pedido.observaciones && <p style={{ fontSize: '0.8rem', fontStyle: 'italic', marginTop: '5px' }}>"{pedido.observaciones}"</p>}
+                    </td>
+                    <td>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        {(pedido.fondoTapaUrl || pedido.imagenPersonalizada) && (
+                          <a href={pedido.fondoTapaUrl || pedido.imagenPersonalizada} target="_blank" rel="noreferrer">
+                            <img src={pedido.fondoTapaUrl || pedido.imagenPersonalizada} alt="Tapa" style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '4px', border: '1px solid var(--border-color)' }} />
+                          </a>
+                        )}
+                        <div style={{ fontSize: '0.85rem' }}>
+                          <strong>{pedido.fondoTapa ? pedido.fondoTapa : 'Diseño Propio'}</strong><br/>
+                          Texto: "{pedido.textoTapa}"<br/>
+                          <small>Fuente: {pedido.tipografia}</small><br/>
+                          <small>Orientación: {pedido.orientacion}</small>
+                        </div>
+                      </div>
+                    </td>
+                    <td><strong>${pedido.total}</strong><br/><small>x{pedido.cantidad}</small></td>
+                    <td><span className={`status-badge status-${pedido.estado?.toLowerCase() || 'pendiente_pago'}`}>{pedido.estado}</span></td>
+                    <td>{new Date(pedido.fechaCreacion).toLocaleDateString()}</td>
                   </tr>
                 ))}
               </tbody>
